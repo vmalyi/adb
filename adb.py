@@ -17,7 +17,7 @@ def push(src, dest):
     if (src is not None) and (dest is not None):
         adb_full_cmd = [ ADB_COMMAND_PREFIX, ADB_COMMAND_PUSH, src, dest ]
         print('*** executing ' + str(adb_full_cmd))
-        return exec_result_handler(adb_full_cmd)
+        return exec_command(adb_full_cmd)
     else:
         return False
 
@@ -26,7 +26,7 @@ def pull(src, dest):
     if (src is not None) and (dest is not None):
         adb_full_cmd = [ ADB_COMMAND_PREFIX, ADB_COMMAND_PULL, src, dest ]
         print('*** executing ' + str(adb_full_cmd))
-        return exec_result_handler(adb_full_cmd)
+        return exec_command(adb_full_cmd)
     else:
         return False
 
@@ -34,13 +34,13 @@ def devices():
     """Provides list of devices available"""
     adb_full_cmd = [ ADB_COMMAND_PREFIX, ADB_COMMAND_DEVICES ]
     print('*** executing ' + str(adb_full_cmd))
-    return exec_result_handler(adb_full_cmd)
+    return exec_command(adb_full_cmd)
 
 def shell():
     """Provides access to adb shell."""
     adb_full_cmd = [ ADB_COMMAND_PREFIX, ADB_COMMAND_SHELL ]
 
-def exec_result_handler(adb_full_cmd):
+def exec_command(adb_full_cmd):
     """Executes adb command and handles result code.
 
     Based on adb command execution result returns
@@ -48,10 +48,6 @@ def exec_result_handler(adb_full_cmd):
 
     """
     if adb_full_cmd is not None:
-        exec_res = subprocess.call(adb_full_cmd)
-        if exec_res == 0:
-            return True
-        else:
-            return False
+        return subprocess.call(adb_full_cmd)
     else:
         return False
