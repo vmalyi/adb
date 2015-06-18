@@ -10,6 +10,7 @@ ADB_COMMAND_CHMOD = 'chmod -R 777'
 ADB_COMMAND_UNINSTALL = 'uninstall'
 ADB_COMMAND_INSTALL = 'install'
 ADB_COMMAND_FORWARD = 'forward'
+ADB_COMMAND_DEVICES = 'devices'
 
 def push(src, dest):
     """Pushes files and folders to device."""
@@ -28,6 +29,16 @@ def pull(src, dest):
         return exec_result_handler(adb_full_cmd)
     else:
         return False
+
+def devices():
+    """Provides list of devices available"""
+    adb_full_cmd = [ ADB_COMMAND_PREFIX, ADB_COMMAND_DEVICES ]
+    print('*** executing ' + str(adb_full_cmd))
+    return exec_result_handler(adb_full_cmd)
+
+def shell():
+    """Provides access to adb shell."""
+    adb_full_cmd = [ ADB_COMMAND_PREFIX, ADB_COMMAND_SHELL ]
 
 def exec_result_handler(adb_full_cmd):
     """Executes adb command and handles result code.

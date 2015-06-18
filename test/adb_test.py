@@ -93,6 +93,11 @@ class TestPullCommand(unittest.TestCase):
         result = adb.pull(tmp_file_on_target, NON_EXISTING_DIR)
         self.assertEqual(result, False)
 
+class TestDevicesCommand(unittest.TestCase):
+    def test_devices_p(self):
+        result = adb.devices()
+        self.assertEqual(result, True)
+
 class TestExecResultsHandler(unittest.TestCase):
     @classmethod
     def setUpClass(self):
