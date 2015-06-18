@@ -53,7 +53,7 @@ class TestPushCommand(unittest.TestCase):
     def test_push_p(self):
         global tmp_file
         result = adb.push(tmp_file.name, DEST_FOLDER_TARGET)
-        self.assertEqual(result, True)
+        self.assertEqual(result, 0)
 
     def test_push_n_invalid_1_parameter(self):
         global tmp_file
@@ -68,7 +68,7 @@ class TestPushCommand(unittest.TestCase):
     def test_push_n_invalid_source_folder(self):
         global tmp_file
         result = adb.push(NON_EXISTING_DIR, DEST_FOLDER_TARGET)
-        self.assertEqual(result, False)
+        self.assertEqual(result, 1)
 
 class TestPullCommand(unittest.TestCase):
 
@@ -76,7 +76,7 @@ class TestPullCommand(unittest.TestCase):
         global tmp_file_on_target
         global dest_folder_host
         result = adb.pull(tmp_file_on_target, dest_folder_host)
-        self.assertEqual(result, True)
+        self.assertEqual(result, 0)
 
     def test_pull_n_invalid_1_parameter(self):
         global dest_folder_host
@@ -91,14 +91,14 @@ class TestPullCommand(unittest.TestCase):
     def test_pull_n_invalid_dest_folder_host(self):
         global tmp_file_on_target
         result = adb.pull(tmp_file_on_target, NON_EXISTING_DIR)
-        self.assertEqual(result, False)
+        self.assertEqual(result, 1)
 
 class TestDevicesCommand(unittest.TestCase):
     def test_devices_p(self):
         result = adb.devices()
-        self.assertEqual(result, True)
+        self.assertEqual(result, 0)
 
-class TestExecResultsHandler(unittest.TestCase):
+class TestExecCommand(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         """Prepares full adb commands and their attributes"""
@@ -115,26 +115,26 @@ class TestExecResultsHandler(unittest.TestCase):
         adb_pull = [ ADB_COMMAND_PREFIX, ADB_COMMAND_PULL, tmp_file_on_target, \
         dest_folder_host ]
 
-    def test_exec_result_handler_p_adb_push(self):
+    def test_exec_command_p_adb_push(self):
         global adb_push
-        result = adb.exec_result_handler(adb_push)
-        self.assertEqual(result, True)
+        result = adb.exec_command(adb_push)
+        self.assertEqual(result, 0)
 
-    def test_exec_result_handler_p_adb_pull(self):
+    def test_exec_command_p_adb_pull(self):
         global adb_pull
-        result = adb.exec_result_handler(adb_pull)
-        self.assertEqual(result, True)
+        result = adb.exec_command(adb_pull)
+        self.assertEqual(result, 0)
 
-    def test_exec_result_handler_p_uncomplete_argument(self):
+    def test_exec_command_p_uncomplete_argument(self):
         #4th argument is missing in adb_command
         adb_command = [ADB_COMMAND_PREFIX, ADB_COMMAND_PULL, tmp_file_on_target]
-        result = adb.exec_result_handler(adb_command)
-        self.assertEqual(result, True)
+        result = adb.exec_command(adb_command)
+        self.assertEqual(result, 0)
 
-    def test_exec_result_handler_n_missing_argument(self):
+    def test_exec_command_n_missing_argument(self):
         #no argument at all
         adb_command = None
-        result = adb.exec_result_handler(adb_command)
+        result = adb.exec_command(adb_command)
         self.assertEqual(result, False)
 
 if __name__ == '__main__':
