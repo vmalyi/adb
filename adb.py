@@ -1,5 +1,6 @@
 import os
-import subprocess
+import tempfile
+from subprocess import check_output, CalledProcessError
 
 ADB_COMMAND_PREFIX = 'adb'
 ADB_COMMAND_SHELL = 'shell'
@@ -48,6 +49,14 @@ def exec_command(adb_full_cmd):
 
     """
     if adb_full_cmd is not None:
-        return subprocess.call(adb_full_cmd)
+        try:
+            t = tempfile.TemporaryFile()
+            output = check_output(adb_full_cmd, stderr=t)
+            result = 0, output
+            print(result)
+        except CalledProcessError as e:
+            t.seek(0)
+            result = e.returncode, t.read()
+        return result
     else:
         return False
