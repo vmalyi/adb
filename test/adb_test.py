@@ -3,6 +3,7 @@ import tempfile
 import sys
 import os
 import ntpath
+import re
 import adb
 
 DEST_FOLDER_TARGET = '/data/media/0/'
@@ -24,6 +25,8 @@ tmp_file_on_target = None
 
 adb_push = None
 adb_pull = None
+
+positive_exp_result = 0, ''
 
 def setUpModule():
     #todo: implement tearDownModule function which will clean generated files
@@ -52,8 +55,9 @@ def generate_tmp_file():
 class TestPushCommand(unittest.TestCase):
     def test_push_p(self):
         global tmp_file
+        global positive_exp_result
         result = adb.push(tmp_file.name, DEST_FOLDER_TARGET)
-        self.assertEqual(result, 0)
+        self.assertEqual(result, positive_exp_result)
 
     def test_push_n_invalid_1_parameter(self):
         global tmp_file
@@ -74,8 +78,9 @@ class TestPullCommand(unittest.TestCase):
     def test_pull_p(self):
         global tmp_file_on_target
         global dest_folder_host
+        global positive_exp_result
         result = adb.pull(tmp_file_on_target, dest_folder_host)
-        self.assertEqual(result, 0)
+        self.assertEqual(result, positive_exp_result)
 
     def test_pull_n_invalid_1_parameter(self):
         global dest_folder_host
@@ -92,10 +97,15 @@ class TestPullCommand(unittest.TestCase):
         result = adb.pull(tmp_file_on_target, NON_EXISTING_DIR)
         self.assertNotEqual(str(result), 0)
 
-class TestDevicesCommand(unittest.TestCase):
-    def test_devices_p(self):
-        result = adb.devices()
-        self.assertEqual(result, 0)
+#class TestDevicesCommand(unittest.TestCase):
+    #def test_devices_p(self):
+    #    result = adb.devices()
+    #    device_entry = re.search('(.*)(?=(\n.*){1}$)', result[1])
+    #    exp_result = 0, device_entry.group(0)
+    #    print('+++++++++')
+    #    print(device_entry.group(0))
+    #    print('+++++++++')
+    #    self.assertEqual(result, exp_result)
 
 class TestExecCommand(unittest.TestCase):
     @classmethod
@@ -116,19 +126,22 @@ class TestExecCommand(unittest.TestCase):
 
     def test_exec_command_p_adb_push(self):
         global adb_push
+        global positive_exp_result
         result = adb.exec_command(adb_push)
-        self.assertEqual(result, 0)
+        self.assertEqual(result, positive_exp_result)
 
     def test_exec_command_p_adb_pull(self):
         global adb_pull
+        global positive_exp_result
         result = adb.exec_command(adb_pull)
-        self.assertEqual(result, 0)
+        self.assertEqual(result, positive_exp_result)
 
     def test_exec_command_p_uncomplete_argument(self):
         #4th argument is missing in adb_command
+        global positive_exp_result
         adb_command = [ADB_COMMAND_PREFIX, ADB_COMMAND_PULL, tmp_file_on_target]
         result = adb.exec_command(adb_command)
-        self.assertEqual(result, 0)
+        self.assertEqual(result, positive_exp_result)
 
     def test_exec_command_n_missing_argument(self):
         #no argument at all
