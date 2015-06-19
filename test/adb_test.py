@@ -58,20 +58,19 @@ class TestPushCommand(unittest.TestCase):
     def test_push_n_invalid_1_parameter(self):
         global tmp_file
         result = adb.push(None,DEST_FOLDER_TARGET)
-        self.assertEqual(result, False)
+        self.assertNotEqual(str(result), 0)
 
     def test_push_n_invalid_2_sparameter(self):
         global tmp_file
         result = adb.push(tmp_file.name,None)
-        self.assertEqual(result, False)
+        self.assertNotEqual(str(result), 0)
 
     def test_push_n_invalid_source_folder(self):
         global tmp_file
         result = adb.push(NON_EXISTING_DIR, DEST_FOLDER_TARGET)
-        self.assertEqual(result, 1)
+        self.assertNotEqual(str(result), 0)
 
 class TestPullCommand(unittest.TestCase):
-
     def test_pull_p(self):
         global tmp_file_on_target
         global dest_folder_host
@@ -81,17 +80,17 @@ class TestPullCommand(unittest.TestCase):
     def test_pull_n_invalid_1_parameter(self):
         global dest_folder_host
         result = adb.pull(None, dest_folder_host)
-        self.assertEqual(result, False)
+        self.assertNotEqual(str(result), 0)
 
     def test_pull_n_invalid_2_parameter(self):
         global tmp_file_on_target
         result = adb.pull(tmp_file_on_target, None)
-        self.assertEqual(result, False)
+        self.assertNotEqual(str(result), 0)
 
     def test_pull_n_invalid_dest_folder_host(self):
         global tmp_file_on_target
         result = adb.pull(tmp_file_on_target, NON_EXISTING_DIR)
-        self.assertEqual(result, 1)
+        self.assertNotEqual(str(result), 0)
 
 class TestDevicesCommand(unittest.TestCase):
     def test_devices_p(self):
@@ -120,7 +119,6 @@ class TestExecCommand(unittest.TestCase):
         result = adb.exec_command(adb_push)
         self.assertEqual(result, 0)
 
-
     def test_exec_command_p_adb_pull(self):
         global adb_pull
         result = adb.exec_command(adb_pull)
@@ -136,7 +134,7 @@ class TestExecCommand(unittest.TestCase):
         #no argument at all
         adb_command = None
         result = adb.exec_command(adb_command)
-        self.assertEqual(result, False)
+        self.assertNotEqual(str(result), 0)
 
 if __name__ == '__main__':
     unittest.main()
