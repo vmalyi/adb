@@ -120,6 +120,7 @@ class TestExecCommand(unittest.TestCase):
         result = adb.exec_command(adb_push)
         self.assertEqual(result, 0)
 
+
     def test_exec_command_p_adb_pull(self):
         global adb_pull
         result = adb.exec_command(adb_pull)
