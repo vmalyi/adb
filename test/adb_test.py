@@ -97,15 +97,11 @@ class TestPullCommand(unittest.TestCase):
         result = adb.pull(tmp_file_on_target, NON_EXISTING_DIR)
         self.assertNotEqual(str(result), 0)
 
-#class TestDevicesCommand(unittest.TestCase):
-    #def test_devices_p(self):
-    #    result = adb.devices()
-    #    device_entry = re.search('(.*)(?=(\n.*){1}$)', result[1])
-    #    exp_result = 0, device_entry.group(0)
-    #    print('+++++++++')
-    #    print(device_entry.group(0))
-    #    print('+++++++++')
-    #    self.assertEqual(result, exp_result)
+class TestDevicesCommand(unittest.TestCase):
+    def test_devices_p(self):
+        result = adb.devices()
+        #don't check output code in result but presence of "device" string
+        self.assertRegexpMatches(result[1], '\\tdevice')
 
 class TestExecCommand(unittest.TestCase):
     @classmethod

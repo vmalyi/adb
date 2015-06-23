@@ -53,7 +53,6 @@ def exec_command(adb_full_cmd):
             t = tempfile.TemporaryFile()
             output = check_output(adb_full_cmd, stderr=t)
             result = 0, output
-            print(result)
         except CalledProcessError as e:
             t.seek(0)
             result = e.returncode, t.read()
