@@ -17,7 +17,6 @@ def push(src, dest):
     """Pushes files and folders to device."""
     if (src is not None) and (dest is not None):
         adb_full_cmd = [ ADB_COMMAND_PREFIX, ADB_COMMAND_PUSH, src, dest ]
-        print('*** executing ' + str(adb_full_cmd))
         return exec_command(adb_full_cmd)
     else:
         return False
@@ -26,7 +25,6 @@ def pull(src, dest):
     """Pulls files and folders to device."""
     if (src is not None) and (dest is not None):
         adb_full_cmd = [ ADB_COMMAND_PREFIX, ADB_COMMAND_PULL, src, dest ]
-        print('*** executing ' + str(adb_full_cmd))
         return exec_command(adb_full_cmd)
     else:
         return False
@@ -34,7 +32,6 @@ def pull(src, dest):
 def devices():
     """Provides list of devices available"""
     adb_full_cmd = [ ADB_COMMAND_PREFIX, ADB_COMMAND_DEVICES ]
-    print('*** executing ' + str(adb_full_cmd))
     return exec_command(adb_full_cmd)
 
 def shell():
@@ -53,9 +50,12 @@ def exec_command(adb_full_cmd):
             t = tempfile.TemporaryFile()
             output = check_output(adb_full_cmd, stderr=t)
             result = 0, output
+            print('*** executing ' + '"' + ' '.join(adb_full_cmd) + '"' \
+            + ' command')
         except CalledProcessError as e:
             t.seek(0)
             result = e.returncode, t.read()
+        print(result[1])
         return result
     else:
         return False
