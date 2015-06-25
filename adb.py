@@ -1,5 +1,6 @@
 import os
 import tempfile
+import pdb
 from subprocess import check_output, CalledProcessError
 
 ADB_COMMAND_PREFIX = 'adb'
@@ -30,13 +31,24 @@ def pull(src, dest):
         return False
 
 def devices():
-    """Provides list of devices available"""
+    """Provides list of available devices"""
+    #todo: return device IDs
     adb_full_cmd = [ ADB_COMMAND_PREFIX, ADB_COMMAND_DEVICES ]
     return exec_command(adb_full_cmd)
 
-def shell():
-    """Provides access to adb shell."""
-    adb_full_cmd = [ ADB_COMMAND_PREFIX, ADB_COMMAND_SHELL ]
+def shell(subcommand):
+    """Executes subcommand in adb shell
+
+    accepts string as "subcommand" argument
+    example: "adb shell cat filename.txt"
+
+    """
+    if subcommand is not None:
+        adb_full_cmd = [ ADB_COMMAND_PREFIX, ADB_COMMAND_SHELL, subcommand ]
+        return exec_command(adb_full_cmd)
+    else:
+        print("Please specify subcommand which will be executed in adb shell")
+        return 1
 
 def exec_command(adb_full_cmd):
     """Executes adb command and handles result code.

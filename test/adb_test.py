@@ -99,14 +99,34 @@ class TestPullCommand(unittest.TestCase):
 
 class TestDevicesCommand(unittest.TestCase):
     def test_devices_p(self):
+        #todo: add logic for checking whether device ID has been returned
         result = adb.devices()
         #don't check output code in result but presence of "device" string
         self.assertRegexpMatches(result[1], '\\tdevice')
 
+class TestShellCommand(unittest.TestCase):
+    def test_shell_p(self):
+        result = adb.shell('ls')
+        #search for folders which will be for sure on Adnroid OS
+        self.assertRegexpMatches(result[1], '(\\r\\nroot|\\r\\nsys|\\r\\nsystem)')
+
+    def test_shell_p_w_option(self):
+        result = adb.shell('ls -l')
+        #search for time attribute which is for sure present in "-l" option
+        self.assertRegexpMatches(result[1], '[0-2][0-9]:[0-5][0-9]')
+
+    def test_shell_n_misspelle(self):
+        result = adb.shell('misspelled')
+        #todo:implement assert
+
+    def test_shell_n_wo_subcommand(self):
+        result = adb.shell()
+        #todo:implement assert
+
 class TestExecCommand(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        """Prepares full adb commands and their attributes"""
+        """Prepares full adb commands for tests"""
         #assembles "adb push" command
         global tmp_file
         global adb_push
@@ -144,6 +164,9 @@ class TestExecCommand(unittest.TestCase):
         adb_command = None
         result = adb.exec_command(adb_command)
         self.assertNotEqual(str(result), 0)
+
+        #todo: add negative tests for adb_push/pull where command is misspelled
+        #like global misspelled_adb_push = [ADB_COMMAND_PREFIX, 'pul']
 
 if __name__ == '__main__':
     unittest.main()
