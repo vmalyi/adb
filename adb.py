@@ -43,12 +43,8 @@ def shell(subcommand):
     example: "adb shell cat filename.txt"
 
     """
-    if subcommand is not None:
-        adb_full_cmd = [ ADB_COMMAND_PREFIX, ADB_COMMAND_SHELL, subcommand ]
-        return exec_command(adb_full_cmd)
-    else:
-        print("Please specify subcommand which will be executed in adb shell")
-        return 1
+    adb_full_cmd = [ ADB_COMMAND_PREFIX, ADB_COMMAND_SHELL, subcommand ]
+    return exec_command(adb_full_cmd)
 
 def exec_command(adb_full_cmd):
     """Executes adb command and handles result code.

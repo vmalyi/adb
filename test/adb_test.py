@@ -115,13 +115,9 @@ class TestShellCommand(unittest.TestCase):
         #search for time attribute which is for sure present in "-l" option
         self.assertRegexpMatches(result[1], '[0-2][0-9]:[0-5][0-9]')
 
-    def test_shell_n_misspelle(self):
+    def test_shell_n_misspelled(self):
         result = adb.shell('misspelled')
-        #todo:implement assert
-
-    def test_shell_n_wo_subcommand(self):
-        result = adb.shell()
-        #todo:implement assert
+        self.assertRegexpMatches(result[1], 'not found')
 
 class TestExecCommand(unittest.TestCase):
     @classmethod
