@@ -5,15 +5,17 @@ except ImportError:
     from distutils.core import setup
 
 requirements = [
+    'sure',
 ]
+
 
 test_requirements = [
 ]
 
 setup(
     name='adb_android',
-    version='0.5.0',
-    description="Enables android adb in your python script",
+    version='1.0.0',
+    description="Enable android adb in your python script",
     long_description='This python package is a wrapper for standard android adb\
     implementation. It allows you to execute android adb commands in your \
     python script.',
@@ -29,7 +31,6 @@ setup(
     license="GNU",
     keywords='adb, android',
     classifiers=[
-    'Development Status :: 4 - Beta',
     'Programming Language :: Python :: 2.7',
     'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
     'Topic :: Software Development :: Testing',

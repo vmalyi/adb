@@ -1,142 +1,151 @@
-import os
 import tempfile
-import var as v
 from subprocess import check_output, CalledProcessError
 
+import var as v
+
+
 def push(src, dest):
-    """Pushes files and folders to device."""
-    adb_full_cmd = [ v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_PUSH, src, dest ]
-    return exec_command(adb_full_cmd)
+    """
+    Push object from host to target
+    :param src: string path to source object on host
+    :param dest: string destination path on target
+    :return: result of _exec_command() execution
+    """
+    adb_full_cmd = [v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_PUSH, src, dest]
+    return _exec_command(adb_full_cmd)
+
 
 def pull(src, dest):
-    """Pulls files and folders to device."""
-    adb_full_cmd = [ v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_PULL, src, dest ]
-    return exec_command(adb_full_cmd)
-
-def devices(opt_l=''):
-    """Provides list of available devices"""
-    adb_full_cmd = [ v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_DEVICES, opt_l ]
-    return exec_command(adb_full_cmd)
-
-def shell(subcommand):
-    """Executes subcommand in adb shell
-
-    accepts string as "subcommand" argument
-    example: "adb shell cat filename.txt"
-
     """
-    adb_full_cmd = [ v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_SHELL, subcommand ]
-    return exec_command(adb_full_cmd)
-
-def install(apk, opt_r='', opt_s='', opt_l='', opt_d='', opt_t=''):
-    """Installs apk on device.
-
-    options:
-        -r: replace existing application
-        -s: install application on sdcard
-        -l: forward lock application
-        -d: reinstall existing apk
-        -t: allow test packages
-
+    Pull object from target to host
+    :param src: string path of object on target
+    :param dest: string destination path on host
+    :return: result of _exec_command() execution
     """
-    adb_full_cmd = [ v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_INSTALL, opt_r, opt_s, \
-    opt_l, opt_d, opt_t, apk ]
-    return exec_command(adb_full_cmd)
+    adb_full_cmd = [v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_PULL, src, dest]
+    return _exec_command(adb_full_cmd)
 
-def uninstall(apk, opt_k=''):
-    """Uninstalls apk from device.
 
-    options:
-        -k: keep the data and cache directories
-
+def devices(opts=[]):
     """
-    adb_full_cmd = [ v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_UNINSTALL, apk, opt_k ]
-    return exec_command(adb_full_cmd)
+    Get list of all available devices including emulators
+    :param opts: list command options (e.g. ["-r", "-a"])
+    :return: result of _exec_command() execution
+    """
+    adb_full_cmd = [v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_DEVICES, _convert_opts(opts)]
+    return _exec_command(adb_full_cmd)
+
+
+def shell(cmd):
+    """
+    Execute shell command on target
+    :param cmd: string shell command to execute
+    :return: result of _exec_command() execution
+    """
+    adb_full_cmd = [v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_SHELL, cmd]
+    return _exec_command(adb_full_cmd)
+
+
+def install(apk, opts=[]):
+    """
+    Install *.apk on target
+    :param apk: string path to apk on host to install
+    :param opts: list command options (e.g. ["-r", "-a"])
+    :return: result of _exec_command() execution
+    """
+    adb_full_cmd = [v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_INSTALL, _convert_opts(opts), apk]
+    return _exec_command(adb_full_cmd)
+
+
+def uninstall(app, opts=[]):
+    """
+    Uninstall app from target
+    :param app: app name to uninstall from target (e.g. "com.example.android.valid")
+    :param opts: list command options (e.g. ["-r", "-a"])
+    :return: result of _exec_command() execution
+    """
+    adb_full_cmd = [v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_UNINSTALL, _convert_opts(opts), app]
+    return _exec_command(adb_full_cmd)
+
 
 def getserialno():
-    '''Gets serial number for all online devices
+    """
+    Get serial number for all available target devices
+    :return: result of _exec_command() execution
+    """
+    adb_full_cmd = [v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_GETSERIALNO]
+    return _exec_command(adb_full_cmd)
 
-    args:
-        n/a
-
-    returns:
-        String device serial number
-
-    '''
-    adb_full_cmd = [ v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_GETSERIALNO ]
-    return exec_command(adb_full_cmd)
 
 def wait_for_device():
-    '''Waits until device is online
+    """
+    Block execution until the device is online
+    :return: result of _exec_command() execution
+    """
+    adb_full_cmd = [v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_WAITFORDEVICE]
+    return _exec_command(adb_full_cmd)
 
-    args:
-        n/a
-
-    returns:
-        0 if command has been executed successfully.
-    '''
-    adb_full_cmd = [ v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_WAITFORDEVICE ]
-    return exec_command(adb_full_cmd)
 
 def start_server():
-    '''Start adb server daemon
+    """
+    Startd adb server daemon on host
+    :return: result of _exec_command() execution
+    """
+    adb_full_cmd = [v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_START_SERVER]
+    return _exec_command(adb_full_cmd)
 
-    args:
-        n/a
-
-    returns:
-        0 if command has been executed successfully.
-    '''
-    adb_full_cmd = [ v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_START_SERVER ]
-    return exec_command(adb_full_cmd)
 
 def kill_server():
-    '''Stops adb server daemon
+    """
+    Kill adb server daemon on host
+    :return: result of _exec_command() execution
+    """
+    adb_full_cmd = [v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_KILL_SERVER]
+    return _exec_command(adb_full_cmd)
 
-    args:
-        n/a
-
-    returns:
-        0 if command has been executed successfully.
-    '''
-    adb_full_cmd = [ v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_KILL_SERVER ]
-    return exec_command(adb_full_cmd)
 
 def get_state():
-    '''Gets current state of device connected per adb
-
-    args:
-        n/a
-
-    returns:
-        0 if command has been executed successfully.
-    '''
-    adb_full_cmd = [ v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_GET_STATE ]
-    return exec_command(adb_full_cmd)
-
-def exec_command(adb_full_cmd):
-    """Executes adb command and handles result code.
-
-    Based on adb command execution result returns
-    True (0) or False (!=0).
-
     """
-    if adb_full_cmd is not None:
-        try:
-            t = tempfile.TemporaryFile()
-            #removes empty list elements if func argument hasn't been used
-            final_adb_full_cmd = []
-            for e in adb_full_cmd:
-                if e != '':
-                    final_adb_full_cmd.append(e)
-            print('\n*** executing ' + ' '.join(adb_full_cmd) + ' ' \
-            + 'command')
-            output = check_output(final_adb_full_cmd, stderr=t)
-            result = 0, output
-        except CalledProcessError as e:
-            t.seek(0)
-            result = e.returncode, t.read()
-        print('\n' + result[1])
-        return result
+    Get state of device connected per adb
+    :return: result of _exec_command() execution
+    """
+    adb_full_cmd = [v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_GET_STATE]
+    return _exec_command(adb_full_cmd)
+
+
+def _convert_opts(opts):
+    """
+    Convert list with command options to single string value
+    with 'space' delimeter
+    :param opts: list with space-delimeted values
+    :return: string with space-delimeted values
+    """
+    return ' '.join(opts)
+
+
+def _exec_command(adb_cmd):
+    """
+    Format adb command and execute it in shell
+    :param adb_cmd: list adb command to execute
+    :return: string '0' and shell command output if successful, otherwise
+    raise CalledProcessError exception and return error code
+    """
+    t = tempfile.TemporaryFile()
+    final_adb_cmd = []
+    for e in adb_cmd:
+        if e != '':  # avoid items with empty string...
+            final_adb_cmd.append(e)  # ... so that final command doesn't
+            # contain extra spaces
+    print('\n*** Executing ' + ' '.join(adb_cmd) + ' ' + 'command')
+
+    try:
+        output = check_output(final_adb_cmd, stderr=t)
+
+    except CalledProcessError as e:
+        t.seek(0)
+        result = e.returncode, t.read()
     else:
-        return False
+        result = 0, output
+        print('\n' + result[1])
+
+    return result
