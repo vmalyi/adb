@@ -99,8 +99,8 @@ class TestGeneral(unittest.TestCase):
 class TestPush(unittest.TestCase):
     @unittest.skip("AssertionError: (0, '') should be the same object as (0, ''), but it is not")
     def test_push(self):
-        result = adb.push(tmp_file.name, DEST_FOLDER_TARGET)
-        result.should.be(POSITIVE_EXP_RESULT_WO_OUTPUT)
+       result = adb.push(tmp_file.name, DEST_FOLDER_TARGET)
+       result.should.be(POSITIVE_EXP_RESULT_WO_OUTPUT)
 
     def test_push_invalid_source_folder(self):
         result = adb.push(NON_EXISTING_DIR, DEST_FOLDER_TARGET)
@@ -151,7 +151,7 @@ class TestExec(unittest.TestCase):
     @unittest.skip("AssertionError: (0, '') should be the same object as (0, ''), but it is not")
     def test_exec_adb_push(self):
         adb_push = [v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_PUSH, tmp_file.name,
-                    DEST_FOLDER_TARGET]
+                     DEST_FOLDER_TARGET]
         result = adb.____exec_command(adb_push)
         result.should.be(POSITIVE_EXP_RESULT_WO_OUTPUT)
 
@@ -209,7 +209,7 @@ class TestInstall(unittest.TestCase):
     @unittest.skipIf(is_emulator(), 'skip if run on emulator')
     def test_install_invalid_apk(self):
         result = adb.install(PATH_TO_INVALID_APK)
-        result[1].should.match(r'INSTALL_FAILED_INVALID_APK')
+        result[1].should.match(r'INSTALL_FAILED_INVALID_APK|not a valid zip')
 
 
 class TestUninstall(unittest.TestCase):
@@ -252,24 +252,11 @@ class TestWaitForDevice(unittest.TestCase):
         result = adb.wait_for_device()
         result[0].should.be(POSITIVE_EXP_RESULT)
 
-
-class TestKillServer(unittest.TestCase):
-    def test_kill_server(self):
-        result = adb.kill_server()
-        result[0].should.be(POSITIVE_EXP_RESULT)
-
-
-class TestStartServer(unittest.TestCase):
-    def test_start_server(self):
-        result = adb.start_server()
-        result[0].should.be(POSITIVE_EXP_RESULT)
-
-
 class TestGetState(unittest.TestCase):
     @unittest.skipIf(is_emulator(), 'skip if run on emulator')
     def test_get_state(self):
         result = adb.get_state()
-        result[1].should.match(r'device\n')
+        result[1].should.match(r'device')
 
 
 if __name__ == '__main__':

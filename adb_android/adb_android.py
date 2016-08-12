@@ -86,6 +86,15 @@ def wait_for_device():
     return _exec_command(adb_full_cmd)
 
 
+def sync():
+    """
+    Perform a sync with device and host
+    :return: result of _exec_command() execution
+    """
+    adb_full_cmd = [v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_SHELL ,v.ADB_COMMAND_SYNC]
+    return _exec_command(adb_full_cmd)
+
+
 def start_server():
     """
     Startd adb server daemon on host
