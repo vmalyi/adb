@@ -1,5 +1,6 @@
 import tempfile
 from subprocess import check_output, CalledProcessError, call
+import subprocess
 
 import var as v
 
@@ -23,6 +24,16 @@ def version():
     """
     adb_full_cmd = [v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_VERSION]
     return _exec_command(adb_full_cmd)
+
+
+def wait_for_device(timeout=10):
+    """
+    Blocks execution until the device is online - that is, until the instance state is device.
+    :param timeout: timeout value for the function to exit automatically, default value is 10.
+    :return: result of _exec_command_with_timer() execution
+    """
+    adb_full_cmd = [v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_WAITFORDEVICE]
+    return _exec_command_with_timer(adb_full_cmd, timeout=timeout)
 
 
 def bugreport(dest_file="default.log"):
@@ -120,15 +131,6 @@ def getserialno():
     return _exec_command(adb_full_cmd)
 
 
-def wait_for_device():
-    """
-    Block execution until the device is online
-    :return: result of _exec_command() execution
-    """
-    adb_full_cmd = [v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_WAITFORDEVICE]
-    return _exec_command(adb_full_cmd)
-
-
 def sync():
     """
     Copy host->device only if changed
@@ -199,6 +201,40 @@ def _exec_command(adb_cmd):
         result = 0, output
         print('\n' + result[1])
 
+    return result
+
+
+def _exec_command_with_timer(adb_cmd, cwd=None, shell=False, kill_tree=True, timeout=20, env=None):
+    """
+    Format adb command and execute it in shell, after the default timeout of
+    20 seconds it automatically kills the process and comes out of function
+    :param adb_cmd: list adb command to execute
+    :param cwd: Current working directory, default value is set to None
+    :param shell: spawns a sub-shell for the command to run, default value is set
+                  to None
+    :param kill_tree: kills all the subprocess launched by command, default
+                      value is set to True
+    :param timeout: Time set to come out of the function, default value is set to 20
+    :param env: Environment, default set to None
+    :return: integer 0 and shell command output, shell command error if successful,
+             integer 1 and shell command output, shell command error if timeout occurs,
+             otherwise raise CalledProcessError exception and return error code
+    """
+    from threading import Timer
+    print('\n*** Executing ' + ' '.join(adb_cmd) + ' ' + 'command')
+    try:
+        p = subprocess.Popen(adb_cmd, shell=shell, cwd=cwd, stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE, env=env)
+        if timeout != -1:
+            timer = Timer(timeout, p.kill)
+            timer.start()
+        stdout, stderr = p.communicate()
+        if timeout != -1:
+            timer.cancel()
+        result = p.returncode, stdout,stderr
+    except CalledProcessError as e:
+        result = p.returncode, stdout, stderr
+    
     return result
 
 

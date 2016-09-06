@@ -28,11 +28,11 @@ Currently following adb commands are **supported**:
 * adb sync
 * adb version
 * adb bugreport
+* adb wait-for-device
 
 Currently following adb commands are **not supported**:
 
 * adb forward
-* adb wait-for-device
 * adb logcat
 * adb jdwp
 * adb help
