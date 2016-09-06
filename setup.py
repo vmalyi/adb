@@ -14,7 +14,7 @@ test_requirements = [
 
 setup(
     name='adb_android',
-    version='1.2.0',
+    version='1.3.0',
     description="Enable android adb in your python script",
     long_description='This python package is a wrapper for standard android adb\
     implementation. It allows you to execute android adb commands in your \
