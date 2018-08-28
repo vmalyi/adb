@@ -67,3 +67,8 @@ adb_android.getserialno()
 * Implement adb commands which are currently not supported by the module (see above)
 * Increase unit test coverage for already supported commands
 * Bring your own ideas!
+
+### Change Log
+
+* Enhanced `shell` command: allows device selection and option parameter input
+` adb_android.shell("command here", device="abc123", opt="-s")`

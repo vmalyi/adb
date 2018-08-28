@@ -79,13 +79,15 @@ def devices(opts=[]):
     return _exec_command(adb_full_cmd)
 
 
-def shell(cmd):
+def shell(cmd, opt="", device=""):
     """
     Execute shell command on target
     :param cmd: string shell command to execute
+    :param opt (optional): allows single command to be used (e.g. ["-s"])
+    :param device (optional): allows specific device to be selected 
     :return: result of _exec_command() execution
     """
-    adb_full_cmd = [v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_SHELL, cmd]
+    adb_full_cmd = [v.ADB_COMMAND_PREFIX, opt, device, v.ADB_COMMAND_SHELL, cmd]
     return _exec_command(adb_full_cmd)
 
 
