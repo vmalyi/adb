@@ -71,4 +71,9 @@ adb_android.getserialno()
 ### Change Log
 
 * Enhanced `shell` command: allows device selection and option parameter input
+
 ` adb_android.shell("command here", device="abc123", opt="-s")`
+
+* `adb_android.devices()` now outputs an array with a list of connected devices
+
+Perform `result = adb_android.devices()` to save array to variable
