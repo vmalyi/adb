@@ -1,6 +1,6 @@
-from __future__ import print_function
 import tempfile
 from subprocess import check_output, CalledProcessError, call
+
 from . import var as v
 
 def _isDeviceAvailable():
@@ -76,16 +76,18 @@ def devices(opts=[]):
     :return: result of _exec_command() execution
     """
     adb_full_cmd = [v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_DEVICES, _convert_opts(opts)]
-    return _exec_command(adb_full_cmd)
+    return _exec_command_cleaned(adb_full_cmd)
 
 
-def shell(cmd):
+def shell(cmd, opt="", device=""):
     """
     Execute shell command on target
     :param cmd: string shell command to execute
+    :param opt (optional): allows single command to be used (e.g. ["-s"])
+    :param device (optional): allows specific device to be selected 
     :return: result of _exec_command() execution
     """
-    adb_full_cmd = [v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_SHELL, cmd]
+    adb_full_cmd = [v.ADB_COMMAND_PREFIX, opt, device, v.ADB_COMMAND_SHELL, cmd]
     return _exec_command(adb_full_cmd)
 
 
@@ -156,12 +158,12 @@ def kill_server():
     return _exec_command(adb_full_cmd)
 
 
-def get_state():
+def get_state(device):
     """
     Get state of device connected per adb
     :return: result of _exec_command() execution
     """
-    adb_full_cmd = [v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_GET_STATE]
+    adb_full_cmd = [v.ADB_COMMAND_PREFIX, device, v.ADB_COMMAND_GET_STATE]
     return _exec_command(adb_full_cmd)
 
 
@@ -188,18 +190,51 @@ def _exec_command(adb_cmd):
         if e != '':  # avoid items with empty string...
             final_adb_cmd.append(e)  # ... so that final command doesn't
             # contain extra spaces
-    print('\n*** Executing ' + ' '.join(adb_cmd) + ' ' + 'command')
+    print('\n > Executing ' + ' '.join(adb_cmd) + ' ' + 'command <')
 
     try:
-        output = check_output(final_adb_cmd, stderr=t)
+        output = check_output(final_adb_cmd, stderr=t).decode()
     except CalledProcessError as e:
         t.seek(0)
         result = e.returncode, t.read()
     else:
         result = 0, output
+        print(result)
         print('\n' + result[1])
 
-    return result
+    return result[1]
+
+
+def _exec_command_cleaned(adb_cmd):
+    """
+    Format adb command and execute it in shell
+    :param adb_cmd: list adb command to execute
+    :return: string '0' and shell command output if successful, otherwise
+    raise CalledProcessError exception and return error code
+    """
+    t = tempfile.TemporaryFile()
+    final_adb_cmd = []
+    for e in adb_cmd:
+        if e != '':  # avoid items with empty string...
+            final_adb_cmd.append(e)  # ... so that final command doesn't
+            # contain extra spaces
+    print('\n > Executing ' + ' '.join(adb_cmd) + ' ' + 'command <')
+
+    try:
+        output = check_output(final_adb_cmd, stderr=t).decode()
+        devicesList = output.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
+        devicesList = devicesList.split(' ')[5:]
+        devicesList = list(filter(('device').__ne__, devicesList))
+        devicesList = list(filter(('').__ne__, devicesList))
+        
+    except CalledProcessError as e:
+        t.seek(0)
+        result = e.returncode, t.read()
+    else:
+        result = 0, devicesList
+        #print('\n' + result[1])
+    
+    return devicesList
 
 
 def _exec_command_to_file(adb_cmd, dest_file_handler):
