@@ -1,6 +1,6 @@
-from __future__ import print_function
 import tempfile
 from subprocess import check_output, CalledProcessError, call
+
 from . import var as v
 
 def _isDeviceAvailable():
@@ -158,12 +158,12 @@ def kill_server():
     return _exec_command(adb_full_cmd)
 
 
-def get_state():
+def get_state(device):
     """
     Get state of device connected per adb
     :return: result of _exec_command() execution
     """
-    adb_full_cmd = [v.ADB_COMMAND_PREFIX, v.ADB_COMMAND_GET_STATE]
+    adb_full_cmd = [v.ADB_COMMAND_PREFIX, device, v.ADB_COMMAND_GET_STATE]
     return _exec_command(adb_full_cmd)
 
 
@@ -190,18 +190,20 @@ def _exec_command(adb_cmd):
         if e != '':  # avoid items with empty string...
             final_adb_cmd.append(e)  # ... so that final command doesn't
             # contain extra spaces
-    print('\n*** Executing ' + ' '.join(adb_cmd) + ' ' + 'command')
+    print('\n > Executing ' + ' '.join(adb_cmd) + ' ' + 'command <')
 
     try:
-        output = check_output(final_adb_cmd, stderr=t)
+        output = check_output(final_adb_cmd, stderr=t).decode()
     except CalledProcessError as e:
         t.seek(0)
         result = e.returncode, t.read()
     else:
         result = 0, output
+        print(result)
         print('\n' + result[1])
 
-    return result
+    return result[1]
+
 
 def _exec_command_cleaned(adb_cmd):
     """
@@ -229,10 +231,11 @@ def _exec_command_cleaned(adb_cmd):
         t.seek(0)
         result = e.returncode, t.read()
     else:
-        result = 0, output
-        print('\n' + result[1])
+        result = 0, devicesList
+        #print('\n' + result[1])
     
     return devicesList
+
 
 def _exec_command_to_file(adb_cmd, dest_file_handler):
     """
