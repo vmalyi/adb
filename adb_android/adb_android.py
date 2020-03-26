@@ -1,7 +1,7 @@
 from __future__ import print_function
 import tempfile
 from subprocess import check_output, CalledProcessError, call, getoutput
-from . import var as v
+import var as v
 
 def _isDeviceAvailable():
     """
