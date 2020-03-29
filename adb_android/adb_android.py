@@ -176,7 +176,9 @@ def _convert_opts(opts):
 
 def adb_help():
     """
-    Prints the adb help
+    Displays command syntax and options
+    :param None
+    :return: Displays all command
     """
     helpC = v.ADB_COMMAND_HELP
     return getoutput(helpC)
