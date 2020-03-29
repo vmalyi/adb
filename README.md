@@ -28,6 +28,7 @@ Currently following adb commands are **supported**:
 * adb sync
 * adb version
 * adb bugreport
+* adb help
 
 Currently following adb commands are **not supported**:
 
@@ -35,7 +36,7 @@ Currently following adb commands are **not supported**:
 * adb wait-for-device
 * adb logcat
 * adb jdwp
-* adb help
+* ~~adb help~~
 * adb -d
 * adb -e
 * adb -s

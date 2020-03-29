@@ -1,7 +1,7 @@
 from __future__ import print_function
 import tempfile
-from subprocess import check_output, CalledProcessError, call
-from . import var as v
+from subprocess import check_output, CalledProcessError, call, getoutput
+import var as v
 
 def _isDeviceAvailable():
     """
@@ -173,6 +173,15 @@ def _convert_opts(opts):
     :return: string with space-delimeted values
     """
     return ' '.join(opts)
+
+def adb_help():
+    """
+    Displays command syntax and options
+    :param None
+    :return: Displays all command
+    """
+    helpC = v.ADB_COMMAND_HELP
+    return getoutput(helpC)
 
 
 def _exec_command(adb_cmd):
